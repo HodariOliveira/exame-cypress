@@ -35,9 +35,6 @@ Cypress.Commands.add('login', (email, senha) => {
 })
 
 Cypress.Commands.add('searchProduct', (productName) => {
-
-    cy.contains('a', 'Products')
-        .click()
     // digita e busca
     cy.get('#search_product')
         .clear()
@@ -80,28 +77,29 @@ Cypress.Commands.add('addProductToCartByName', (productName) => {
 })
 
 Cypress.Commands.add('addProductBySearch', (productName, action = 'continue') => {
-    // busca o produto
     cy.searchProduct(productName)
-
-   // adiciona ao carrinho
     cy.addProductToCartByName(productName)
 
-    // garante que o modal abriu
-    cy.get('.modal-content', { timeout: 5000 })
+    cy.get('#cartModal', { timeout: 5000 })
         .should('be.visible')
 
-    // decide o próximo passo
     if (action === 'continue') {
-        cy.get('#cartModal')
-            .should('be.visible')
-        cy.contains('button, a', 'Continue Shopping')
-            .click()
+        cy.contains('button, a', 'Continue Shopping').click()
     }
 
     if (action === 'viewCart') {
-        cy.get('#cartModal')
-            .should('be.visible')
-        cy.contains('button, a', 'View Cart')
-            .click()
+        cy.contains('button, a', 'View Cart').click()
     }
 })
+
+Cypress.Commands.add('closeCartModal', () => {
+    cy.get('#cartModal', { timeout: 5000 })
+        .should('be.visible')
+
+    cy.contains('button, a', 'Continue Shopping')
+        .click()
+
+    cy.get('#cartModal')
+        .should('not.be.visible')
+})
+
